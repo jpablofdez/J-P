@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Guardian by J&P | Enterprise Cybersecurity & Monitoring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #1e90ff;
+            --primary-bright: #4db8ff;
+            --primary-dim: #1570c9;
+            --primary-glow: rgba(30,144,255,0.4);
+            --gold: #f0a500;
+            --gold-bright: #ffc847;
+            --gold-dim: #c48800;
+            --gold-glow: rgba(240,165,0,0.3);
+            --accent: #00c8ff;
+            --neon-blue: #00d4ff;
+            --bg-dark: #060d1a;
+            --bg-navy: #0a1628;
+            --bg-card: #0d1b2e;
+            --bg-card-hover: #112240;
+            --border: #1a3050;
+            --border-glow: #1e5090;
+            --text: #c8d6e5;
+            --text-dim: #6b8299;
+            --text-bright: #eaf2ff;
+            --success: #00e676;
+            --danger: #ff3860;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ── Animated Background ── */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(30,144,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(30,144,255,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 25s linear infinite;
+        }
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        .bg-radial {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 15% 15%, rgba(30,144,255,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 85%, rgba(240,165,0,0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0,200,255,0.03) 0%, transparent 60%);
+        }
+
+        /* ── World Map Overlay ── */
+        .bg-map {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            opacity: 0.03;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500"><ellipse cx="500" cy="250" rx="480" ry="230" fill="none" stroke="%231e90ff" stroke-width="0.5"/><ellipse cx="500" cy="250" rx="480" ry="230" fill="none" stroke="%231e90ff" stroke-width="0.3" transform="rotate(30 500 250)"/><ellipse cx="500" cy="250" rx="480" ry="230" fill="none" stroke="%231e90ff" stroke-width="0.3" transform="rotate(60 500 250)"/><ellipse cx="500" cy="250" rx="480" ry="230" fill="none" stroke="%231e90ff" stroke-width="0.3" transform="rotate(90 500 250)"/><line x1="20" y1="250" x2="980" y2="250" stroke="%231e90ff" stroke-width="0.3"/><line x1="500" y1="20" x2="500" y2="480" stroke="%231e90ff" stroke-width="0.3"/></svg>') center/cover no-repeat;
+        }
+
+        /* ── Scan Line ── */
+        .scanline {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--gold), var(--primary), transparent);
+            opacity: 0.12;
+            z-index: 1;
+            animation: scanline 5s linear infinite;
+        }
+        @keyframes scanline {
+            0% { top: -2px; }
+            100% { top: 100vh; }
+        }
+
+        /* ── Navigation ── */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            z-index: 100;
+            padding: 0.75rem 2rem;
+            backdrop-filter: blur(20px);
+            background: rgba(6,13,26,0.88);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 44px;
+            width: auto;
+            border-radius: 4px;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            color: var(--text-bright);
+        }
+
+        .logo-text span {
+            background: linear-gradient(135deg, var(--primary-bright), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover { color: var(--primary-bright); }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 0; height: 1px;
+            background: linear-gradient(90deg, var(--primary), var(--gold));
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after { width: 100%; }
+
+        .nav-cta {
+            padding: 0.5rem 1.25rem;
+            border: 1px solid var(--gold) !important;
+            color: var(--gold) !important;
+            border-radius: 4px;
+            transition: all 0.3s !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--gold) !important;
+            color: var(--bg-dark) !important;
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        /* ── Hero ── */
+        .hero {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .hero-content { max-width: 950px; }
+
+        .hero-logo {
+            width: min(520px, 90vw);
+            margin: 0 auto 2.5rem;
+            filter: drop-shadow(0 0 40px var(--primary-glow)) drop-shadow(0 0 80px rgba(30,144,255,0.15));
+            animation: heroFloat 6s ease-in-out infinite;
+        }
+
+        .hero-logo img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--neon-blue);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            background: rgba(30,144,255,0.05);
+        }
+
+        .hero-badge .pulse {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,230,118,0.4); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(0,230,118,0); }
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 3.2rem);
+            font-weight: 900;
+            line-height: 1.15;
+            letter-spacing: 0.02em;
+            color: var(--text-bright);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 40px rgba(30,144,255,0.2);
+        }
+
+        .hero h1 .gradient-blue {
+            background: linear-gradient(135deg, var(--neon-blue), var(--primary-bright));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h1 .gradient-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            max-width: 620px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dim));
+            color: #fff;
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-bright), var(--primary));
+            box-shadow: 0 4px 30px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+            color: var(--bg-dark);
+            box-shadow: 0 4px 20px var(--gold-glow);
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+            box-shadow: 0 4px 30px var(--gold-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary-bright);
+            box-shadow: 0 0 15px rgba(30,144,255,0.1);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat { text-align: center; }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--neon-blue), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.25rem;
+        }
+
+        /* ── Terminal ── */
+        .terminal {
+            background: rgba(6,13,26,0.95);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 3rem;
+            max-width: 720px;
+            margin-left: auto;
+            margin-right: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(30,144,255,0.05), inset 0 0 30px rgba(0,0,0,0.3);
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .terminal-dot.red { background: #ff5f57; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #28ca41; }
+
+        .terminal-line {
+            color: var(--text-dim);
+            margin-bottom: 0.3rem;
+            opacity: 0;
+            animation: terminalFade 0.5s forwards;
+        }
+
+        .terminal-line .prompt { color: var(--gold); }
+        .terminal-line .cmd { color: var(--text-bright); }
+        .terminal-line .result { color: var(--neon-blue); }
+        .terminal-line .ok { color: var(--success); }
+        .terminal-line .warn { color: var(--gold); }
+
+        .terminal-line:nth-child(2) { animation-delay: 0.6s; }
+        .terminal-line:nth-child(3) { animation-delay: 1.1s; }
+        .terminal-line:nth-child(4) { animation-delay: 1.6s; }
+        .terminal-line:nth-child(5) { animation-delay: 2.1s; }
+        .terminal-line:nth-child(6) { animation-delay: 2.6s; }
+        .terminal-line:nth-child(7) { animation-delay: 3.1s; }
+        .terminal-line:nth-child(8) { animation-delay: 3.6s; }
+
+        @keyframes terminalFade { to { opacity: 1; } }
+
+        /* ── Sections ── */
+        section {
+            position: relative;
+            z-index: 2;
+            padding: 6rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            color: var(--gold);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+            font-weight: 800;
+            color: var(--text-bright);
+            letter-spacing: 0.01em;
+            margin-bottom: 1rem;
+        }
+
+        .section-desc {
+            font-size: 1.05rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        /* ── Shield Divider ── */
+        .shield-divider {
+            text-align: center;
+            padding: 2rem 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .shield-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-glow), var(--gold-dim), var(--border-glow), transparent);
+        }
+
+        .shield-divider svg {
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 0 10px var(--primary-glow));
+        }
+
+        /* ── Products ── */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .product-card.rsa-card::before {
+            background: linear-gradient(90deg, var(--primary), var(--neon-blue));
+        }
+
+        .product-card.trip-card::before {
+            background: linear-gradient(90deg, var(--gold), var(--gold-bright));
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .product-card.rsa-card:hover {
+            border-color: var(--primary-dim);
+            box-shadow: 0 8px 40px rgba(30,144,255,0.08);
+        }
+
+        .product-card.trip-card:hover {
+            border-color: var(--gold-dim);
+            box-shadow: 0 8px 40px rgba(240,165,0,0.08);
+        }
+
+        .product-card:hover::before { opacity: 1; }
+
+        .product-icon {
+            width: 56px; height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-icon.rsa {
+            background: linear-gradient(135deg, rgba(30,144,255,0.15), rgba(30,144,255,0.05));
+            border: 1px solid rgba(30,144,255,0.25);
+        }
+
+        .product-icon.trip {
+            background: linear-gradient(135deg, rgba(240,165,0,0.15), rgba(240,165,0,0.05));
+            border: 1px solid rgba(240,165,0,0.25);
+        }
+
+        .product-tag {
+            display: inline-block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .product-tag.rsa {
+            color: var(--neon-blue);
+            background: rgba(30,144,255,0.08);
+            border: 1px solid rgba(30,144,255,0.18);
+        }
+
+        .product-tag.trip {
+            color: var(--gold-bright);
+            background: rgba(240,165,0,0.08);
+            border: 1px solid rgba(240,165,0,0.18);
+        }
+
+        .product-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 0.75rem;
+        }
+
+        .product-card p {
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.88rem;
+            color: var(--text);
+        }
+
+        .product-features li .check-blue { color: var(--neon-blue); }
+        .product-features li .check-gold { color: var(--gold); }
+
+        .product-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: gap 0.3s, color 0.3s;
+        }
+
+        .product-link.blue { color: var(--neon-blue); }
+        .product-link.gold { color: var(--gold); }
+        .product-link:hover { gap: 0.85rem; }
+
+        /* ── Features Grid ── */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-glow);
+            background: var(--bg-card-hover);
+            box-shadow: 0 4px 20px rgba(30,144,255,0.05);
+        }
+
+        .feature-card .icon { font-size: 1.5rem; margin-bottom: 1rem; }
+
+        .feature-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* ── Trust Bar ── */
+        .trust-bar {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: inset 0 0 40px rgba(30,144,255,0.02);
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+        }
+
+        .trust-item .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--neon-blue);
+            box-shadow: 0 0 6px var(--primary-glow);
+        }
+
+        /* ── Leadership ── */
+        .leadership-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .leader-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s;
+        }
+
+        .leader-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 40px rgba(30,144,255,0.06);
+        }
+
+        .leader-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(30,144,255,0.03), transparent);
+            pointer-events: none;
+        }
+
+        .leader-header {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .leader-avatar {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .leader-avatar.cto {
+            background: linear-gradient(135deg, rgba(30,144,255,0.2), rgba(0,200,255,0.05));
+            border: 2px solid rgba(30,144,255,0.4);
+            color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(30,144,255,0.15);
+        }
+
+        .leader-avatar.cso {
+            background: linear-gradient(135deg, rgba(240,165,0,0.2), rgba(240,165,0,0.05));
+            border: 2px solid rgba(240,165,0,0.4);
+            color: var(--gold);
+            box-shadow: 0 0 20px rgba(240,165,0,0.15);
+        }
+
+        .leader-info h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-bright);
+        }
+
+        .leader-role {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: 0.2rem;
+        }
+
+        .leader-role.cto-role { color: var(--neon-blue); }
+        .leader-role.cso-role { color: var(--gold); }
+
+        .leader-bio {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 1.25rem;
+        }
+
+        .leader-certs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .cert-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.58rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .cert-badge.blue {
+            background: rgba(30,144,255,0.08);
+            border: 1px solid rgba(30,144,255,0.15);
+            color: var(--text-dim);
+        }
+
+        .cert-badge.gold {
+            background: rgba(240,165,0,0.08);
+            border: 1px solid rgba(240,165,0,0.15);
+            color: var(--text-dim);
+        }
+
+        .leader-experience {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .exp-item { text-align: center; }
+
+        .exp-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .exp-value.blue { color: var(--neon-blue); }
+        .exp-value.gold { color: var(--gold); }
+
+        .exp-label {
+            font-size: 0.62rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* ── QR Section ── */
+        .qr-section {
+            background: linear-gradient(180deg, transparent, rgba(30,144,255,0.02), transparent);
+        }
+
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .qr-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .qr-card:hover {
+            border-color: var(--border-glow);
+            box-shadow: 0 4px 20px rgba(30,144,255,0.06);
+        }
+
+        .qr-card h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 0.5rem;
+        }
+
+        .qr-card p {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
+        .qr-container {
+            display: inline-block;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .qr-container canvas,
+        .qr-container img { display: block !important; }
+
+        .qr-url {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            word-break: break-all;
+        }
+
+        /* ── Contact ── */
+        .contact-section { text-align: center; }
+
+        .contact-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 4rem 2rem;
+            margin-top: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--gold), var(--neon-blue), var(--gold), var(--primary));
+        }
+
+        .contact-box h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+        }
+
+        .contact-box p {
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.3s;
+        }
+
+        .contact-link:hover {
+            border-color: var(--primary);
+            color: var(--primary-bright);
+            box-shadow: 0 0 15px rgba(30,144,255,0.08);
+        }
+
+        /* ── Footer ── */
+        footer {
+            position: relative;
+            z-index: 2;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-content { max-width: 1200px; margin: 0 auto; }
+
+        .footer-logo-img {
+            height: 60px;
+            width: auto;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 12px var(--primary-glow));
+            border-radius: 6px;
+        }
+
+        .footer-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-bright);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-brand span {
+            background: linear-gradient(135deg, var(--primary-bright), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        footer p {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+        }
+
+        /* ── Particle Canvas ── */
+        #particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ── Animations ── */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-stats { flex-direction: column; gap: 1.5rem; }
+            .products-grid { grid-template-columns: 1fr; }
+            .leadership-grid { grid-template-columns: 1fr; }
+            .qr-grid { grid-template-columns: 1fr; }
+            .leader-header { flex-direction: column; text-align: center; }
+            .hero { padding: 7rem 1.5rem 3rem; }
+            section { padding: 4rem 1.5rem; }
+            .hero-logo { width: min(380px, 85vw); }
+        }
+
+        @media (max-width: 480px) {
+            .features-grid { grid-template-columns: 1fr; }
+            .contact-links { flex-direction: column; align-items: center; }
+            .leader-experience { flex-wrap: wrap; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-radial"></div>
+<div class="bg-map"></div>
+<div class="scanline"></div>
+<canvas id="particles"></canvas>
+
+<!-- Navigation -->
+<nav>
+    <a href="#" class="logo">
+        <img src="logo.jpg" alt="Trip Guardian by J&P">
+        <div class="logo-text">TRIP <span>GUARDIAN</span></div>
+    </a>
+    <ul class="nav-links">
+        <li><a href="#products">Solutions</a></li>
+        <li><a href="#capabilities">Capabilities</a></li>
+        <li><a href="#leadership">Leadership</a></li>
+        <li><a href="#scan">QR Access</a></li>
+        <li><a href="#contact" class="nav-cta">Contact</a></li>
+    </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">
+            <div class="pulse"></div>
+            Global Shield Active &mdash; All Regions Secured
+        </div>
+
+        <div class="hero-logo">
+            <img src="logo.jpg" alt="Trip Guardian by J&P - Global Cybersecurity">
+        </div>
+
+        <h1>
+            <span class="gradient-blue">Global Cybersecurity</span><br>
+            <span class="gradient-gold">& Threat Intelligence</span>
+        </h1>
+        <p>
+            From enterprise encryption to real-time threat monitoring across continents, Trip Guardian by J&P delivers next-generation security infrastructure trusted by organizations worldwide.
+        </p>
+        <div class="hero-buttons">
+            <a href="#products" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Explore Solutions
+            </a>
+            <a href="#scan" class="btn btn-gold">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Scan QR Code
+            </a>
+            <a href="#leadership" class="btn btn-outline">Meet the Team</a>
+        </div>
+
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-value">99.9%</div>
+                <div class="stat-label">Uptime SLA</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">20+</div>
+                <div class="stat-label">Years Combined</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">NIST</div>
+                <div class="stat-label">Framework Aligned</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">Threat Monitoring</div>
+            </div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-dot red"></div>
+                <div class="terminal-dot yellow"></div>
+                <div class="terminal-dot green"></div>
+            </div>
+            <div class="terminal-line"><span class="prompt">guardian@shield $</span> <span class="cmd">trip-guardian scan --global</span></div>
+            <div class="terminal-line"><span class="ok">[SECURE]</span> Identity layer verified &mdash; Zero Trust active</div>
+            <div class="terminal-line"><span class="ok">[SECURE]</span> RSA encryption protocols online</div>
+            <div class="terminal-line"><span class="ok">[SECURE]</span> TripGuardian SOC monitoring live</div>
+            <div class="terminal-line"><span class="warn">[INTEL]</span> Scanning global threat landscape...</div>
+            <div class="terminal-line"><span class="ok">[CLEAR]</span> 0 critical vulnerabilities &mdash; perimeter intact</div>
+            <div class="terminal-line"><span class="result">[SHIELD]</span> All systems nominal. Guardian status: <span class="ok">ACTIVE</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Shield Divider -->
+<div class="shield-divider">
+    <svg width="40" height="44" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 1L22 5.5V12C22 18.5 12 24 12 24C12 24 2 18.5 2 12V5.5L12 1Z" fill="rgba(30,144,255,0.1)" stroke="url(#shieldGrad)" stroke-width="1.2"/>
+        <path d="M12 6L18 8.5V13C18 16.8 12 20.5 12 20.5C12 20.5 6 16.8 6 13V8.5L12 6Z" fill="rgba(240,165,0,0.08)" stroke="url(#shieldGrad)" stroke-width="0.8"/>
+        <circle cx="12" cy="12.5" r="2.5" fill="url(#shieldGrad)"/>
+        <defs>
+            <linearGradient id="shieldGrad" x1="2" y1="1" x2="22" y2="24">
+                <stop stop-color="#1e90ff"/>
+                <stop offset="0.5" stop-color="#f0a500"/>
+                <stop offset="1" stop-color="#00d4ff"/>
+            </linearGradient>
+        </defs>
+    </svg>
+</div>
+
+<!-- Products -->
+<section id="products">
+    <div class="container fade-in">
+        <div class="section-label">// Solutions</div>
+        <div class="section-title">Two Platforms. One Shield.</div>
+        <div class="section-desc">Comprehensive security coverage from cryptographic infrastructure to real-time operational monitoring across the globe.</div>
+
+        <div class="products-grid">
+            <!-- RSA -->
+            <div class="product-card rsa-card">
+                <div class="product-icon rsa">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/><circle cx="12" cy="16" r="1"/></svg>
+                </div>
+                <div class="product-tag rsa">RSA Security Platform</div>
+                <h3>Cryptographic Defense</h3>
+                <p>Enterprise-grade encryption and identity security platform built on RSA cryptographic standards. Protecting sensitive data and digital assets with military-grade encryption protocols across multi-cloud environments.</p>
+                <ul class="product-features">
+                    <li><span class="check-blue">&#9670;</span> End-to-end RSA encryption infrastructure</li>
+                    <li><span class="check-blue">&#9670;</span> Digital certificate management & PKI</li>
+                    <li><span class="check-blue">&#9670;</span> Identity & Access Management (IAM)</li>
+                    <li><span class="check-blue">&#9670;</span> Multi-factor authentication (MFA)</li>
+                    <li><span class="check-blue">&#9670;</span> FedRAMP & NIST CSF 2.0 compliant</li>
+                    <li><span class="check-blue">&#9670;</span> Single Sign-On (SSO) integration</li>
+                </ul>
+                <a href="https://rsa-web-three.vercel.app/" target="_blank" class="product-link blue">
+                    Access RSA Platform <span>&rarr;</span>
+                </a>
+            </div>
+
+            <!-- TripGuardian -->
+            <div class="product-card trip-card">
+                <div class="product-icon trip">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f0a500" stroke-width="1.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div class="product-tag trip">TripGuardian Command</div>
+                <h3>Real-Time Threat Monitoring</h3>
+                <p>Advanced security operations center (SOC) with AI-driven threat detection and real-time global monitoring. Complete situational awareness for your digital and physical infrastructure across all operational theaters.</p>
+                <ul class="product-features">
+                    <li><span class="check-gold">&#9670;</span> 24/7 Security Operations Center</li>
+                    <li><span class="check-gold">&#9670;</span> AI-powered threat intelligence</li>
+                    <li><span class="check-gold">&#9670;</span> Real-time incident response</li>
+                    <li><span class="check-gold">&#9670;</span> Vulnerability & Patch Management</li>
+                    <li><span class="check-gold">&#9670;</span> Compliance monitoring dashboards</li>
+                    <li><span class="check-gold">&#9670;</span> Automated remediation workflows</li>
+                </ul>
+                <a href="https://comando-adl.pages.dev/" target="_blank" class="product-link gold">
+                    Access TripGuardian <span>&rarr;</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Capabilities -->
+<section id="capabilities">
+    <div class="container fade-in">
+        <div class="section-label">// Capabilities</div>
+        <div class="section-title">Full-Spectrum Security</div>
+        <div class="section-desc">Enterprise capabilities built on decades of combined experience at organizations like Equifax, Amazon, and Bank of America.</div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h4>Zero Trust Architecture</h4>
+                <p>Never trust, always verify. Complete identity-centric security with continuous validation at every access point.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f0a500" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </div>
+                <h4>CIAM & IAM</h4>
+                <p>Customer and workforce identity management with Okta, Auth0, and PingID integration. OAuth 2.0 & OIDC native.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00e676" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </div>
+                <h4>Continuous Monitoring</h4>
+                <p>Real-time dashboards and automated alerting. From Looker Studio to custom SOC platforms, total visibility in motion.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff3860" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <h4>Vulnerability Management</h4>
+                <p>Risk-based patching strategies across thousands of endpoints. Proactive threat hunting and automated remediation.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1e90ff" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <h4>Compliance & Auditing</h4>
+                <p>FedRAMP, PCI, HIPAA, NIST CSF 2.0. Built-in compliance playbooks with automated evidence collection.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f0a500" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h4>Cloud Security & DevSecOps</h4>
+                <p>GCP, AWS, Kubernetes, Terraform, Docker. Secure CI/CD pipelines with infrastructure-as-code and shift-left security.</p>
+            </div>
+        </div>
+
+        <div class="trust-bar">
+            <div class="trust-item"><div class="dot"></div> NIST CSF 2.0</div>
+            <div class="trust-item"><div class="dot"></div> FedRAMP</div>
+            <div class="trust-item"><div class="dot"></div> PCI DSS</div>
+            <div class="trust-item"><div class="dot"></div> HIPAA</div>
+            <div class="trust-item"><div class="dot"></div> (ISC)&sup2; SSCP</div>
+            <div class="trust-item"><div class="dot"></div> OAuth 2.0 / OIDC</div>
+            <div class="trust-item"><div class="dot"></div> SOC 2</div>
+            <div class="trust-item"><div class="dot"></div> ISO 27001</div>
+        </div>
+    </div>
+</section>
+
+<!-- Leadership -->
+<section id="leadership">
+    <div class="container fade-in">
+        <div class="section-label">// Leadership</div>
+        <div class="section-title">Founded by Security Veterans</div>
+        <div class="section-desc">Our founding team brings enterprise-grade security expertise from the world's leading data and technology companies.</div>
+
+        <div class="leadership-grid">
+            <!-- JP -->
+            <div class="leader-card">
+                <div class="leader-header">
+                    <div class="leader-avatar cto">JP</div>
+                    <div class="leader-info">
+                        <h3>Juan Pablo Fernandez Delgado</h3>
+                        <div class="leader-role cto-role">Chief Technology Officer</div>
+                    </div>
+                </div>
+                <div class="leader-bio">
+                    Systems Engineer with 15+ years designing and managing secure technology infrastructure in highly regulated environments. Former Cloud/DevOps Engineer at Equifax, specializing in GCP, identity platforms, and FedRAMP-compliant architectures. Expert in automation, CI/CD pipelines, and ensuring 99.9% uptime for mission-critical systems.
+                </div>
+                <div class="leader-certs">
+                    <span class="cert-badge blue">GCP DevOps Engineer</span>
+                    <span class="cert-badge blue">Machine Learning - Texas Tech</span>
+                    <span class="cert-badge blue">Data Science - TEC</span>
+                    <span class="cert-badge blue">M.S. Database Tech</span>
+                    <span class="cert-badge blue">Okta / Auth0</span>
+                    <span class="cert-badge blue">Terraform</span>
+                    <span class="cert-badge blue">Kubernetes</span>
+                </div>
+                <div class="leader-experience">
+                    <div class="exp-item">
+                        <div class="exp-value blue">15+</div>
+                        <div class="exp-label">Years Exp.</div>
+                    </div>
+                    <div class="exp-item">
+                        <div class="exp-value blue">Equifax</div>
+                        <div class="exp-label">Former</div>
+                    </div>
+                    <div class="exp-item">
+                        <div class="exp-value blue">GCP</div>
+                        <div class="exp-label">Certified</div>
+                    </div>
+                    <div class="exp-item">
+                        <div class="exp-value blue">99.9%</div>
+                        <div class="exp-label">Uptime</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paul -->
+            <div class="leader-card">
+                <div class="leader-header">
+                    <div class="leader-avatar cso">PJ</div>
+                    <div class="leader-info">
+                        <h3>Paul Jimenez Ramirez</h3>
+                        <div class="leader-role cso-role">Chief Security Officer</div>
+                    </div>
+                </div>
+                <div class="leader-bio">
+                    Cybersecurity leader with deep expertise in identity management, risk compliance, and security auditing. Former CIAM Tech Lead and Customer Success Manager at Equifax, with additional leadership at Amazon and Bank of America. Specializing in NIST-aligned frameworks, vulnerability management, and building security-first cultures.
+                </div>
+                <div class="leader-certs">
+                    <span class="cert-badge gold">(ISC)&sup2; SSCP</span>
+                    <span class="cert-badge gold">NIST CSF 2.0</span>
+                    <span class="cert-badge gold">FedRAMP 3PAO</span>
+                    <span class="cert-badge gold">Okta CIC</span>
+                    <span class="cert-badge gold">Six Sigma Green Belt</span>
+                    <span class="cert-badge gold">PCI / HIPAA</span>
+                    <span class="cert-badge gold">PingID MFA</span>
+                </div>
+                <div class="leader-experience">
+                    <div class="exp-item">
+                        <div class="exp-value gold">10+</div>
+                        <div class="exp-label">Years Exp.</div>
+                    </div>
+                    <div class="exp-item">
+                        <div class="exp-value gold">Equifax</div>
+                        <div class="exp-label">Former</div>
+                    </div>
+                    <div class="exp-item">
+                        <div class="exp-value gold">Amazon</div>
+                        <div class="exp-label">Tech Lead</div>
+                    </div>
+                    <div class="exp-item">
+                        <div class="exp-value gold">40+</div>
+                        <div class="exp-label">Certs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- QR Section -->
+<section id="scan" class="qr-section">
+    <div class="container fade-in">
+        <div class="section-label" style="text-align:center;">// Quick Access</div>
+        <div class="section-title" style="text-align:center;">Scan. Connect. Secure.</div>
+        <div class="section-desc" style="text-align:center; margin: 0 auto;">Scan these QR codes to instantly access our security platforms from any device.</div>
+
+        <div class="qr-grid">
+            <div class="qr-card">
+                <h4>RSA Platform</h4>
+                <p>Cryptographic defense & identity management</p>
+                <div class="qr-container" id="qr-rsa"></div>
+                <div class="qr-url">rsa-web-three.vercel.app</div>
+            </div>
+            <div class="qr-card">
+                <h4>TripGuardian</h4>
+                <p>Real-time threat monitoring & SOC command</p>
+                <div class="qr-container" id="qr-trip"></div>
+                <div class="qr-url">comando-adl.pages.dev</div>
+            </div>
+            <div class="qr-card">
+                <h4>This Landing Page</h4>
+                <p>Share with your team &mdash; instant access</p>
+                <div class="qr-container" id="qr-landing"></div>
+                <div class="qr-url" id="landing-url">current page</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="contact-section">
+    <div class="container fade-in">
+        <div class="contact-box">
+            <div class="section-label">// Get Started</div>
+            <h3>Ready to Activate Your Shield?</h3>
+            <p>Whether you need enterprise encryption, identity management, or 24/7 threat monitoring &mdash; our team deploys globally.</p>
+            <div class="contact-links">
+                <a href="mailto:jpablofdez@gmail.com" class="contact-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    jpablofdez@gmail.com
+                </a>
+                <a href="mailto:electrix@live.com.mx" class="contact-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    electrix@live.com.mx
+                </a>
+                <a href="https://rsa-web-three.vercel.app/" target="_blank" class="contact-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                    RSA Platform
+                </a>
+                <a href="https://comando-adl.pages.dev/" target="_blank" class="contact-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                    TripGuardian
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <img src="logo.jpg" alt="Trip Guardian" class="footer-logo-img">
+        <div class="footer-brand">TRIP <span>GUARDIAN</span> by J&P</div>
+        <p>&copy; 2025 Trip Guardian by J&P. All rights reserved. | Costa Rica & LATAM</p>
+        <p style="margin-top: 0.5rem; font-size: 0.62rem; color: rgba(107,130,153,0.5);">Enterprise Cybersecurity &bull; Identity Management &bull; Global Threat Monitoring &bull; Compliance</p>
+    </div>
+</footer>
+
+<script>
+    // ── QR Codes ──
+    document.addEventListener('DOMContentLoaded', function() {
+        const qrOpts = {
+            width: 180, height: 180,
+            colorDark: "#0a1628",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        };
+
+        new QRCode(document.getElementById("qr-rsa"), {
+            text: "https://rsa-web-three.vercel.app/", ...qrOpts
+        });
+
+        new QRCode(document.getElementById("qr-trip"), {
+            text: "https://comando-adl.pages.dev/", ...qrOpts
+        });
+
+        const landingUrl = window.location.href;
+        new QRCode(document.getElementById("qr-landing"), {
+            text: landingUrl, ...qrOpts
+        });
+        document.getElementById("landing-url").textContent = window.location.host || "local file";
+    });
+
+    // ── Particles (blue + gold network) ──
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+        constructor() {
+            this.reset();
+        }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 1.5 + 0.5;
+            this.speedX = (Math.random() - 0.5) * 0.25;
+            this.speedY = (Math.random() - 0.5) * 0.25;
+            this.isGold = Math.random() > 0.7;
+            this.opacity = Math.random() * 0.3 + 0.1;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+        }
+        draw() {
+            const color = this.isGold ? `rgba(240, 165, 0, ${this.opacity})` : `rgba(30, 144, 255, ${this.opacity})`;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < 70; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 140) {
+                    const alpha = 0.03 * (1 - dist / 140);
+                    const isGoldLine = particles[i].isGold && particles[j].isGold;
+                    ctx.strokeStyle = isGoldLine
+                        ? `rgba(240, 165, 0, ${alpha})`
+                        : `rgba(30, 144, 255, ${alpha})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // ── Scroll Fade ──
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ── Smooth Scroll ──
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+</script>
+
+</body>
+</html>
