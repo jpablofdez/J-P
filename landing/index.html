@@ -881,6 +881,34 @@
             word-break: break-all;
         }
 
+        .qr-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+            padding: 0.55rem 1.25rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dim));
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 12px var(--primary-glow);
+        }
+
+        .qr-download:hover {
+            background: linear-gradient(135deg, var(--primary-bright), var(--primary));
+            box-shadow: 0 4px 20px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+
+        .qr-download svg {
+            flex-shrink: 0;
+        }
+
         /* ── Contact ── */
         .contact-section { text-align: center; }
 
@@ -1353,18 +1381,30 @@
                 <p>Cryptographic defense & identity management</p>
                 <div class="qr-container" id="qr-rsa"></div>
                 <div class="qr-url">rsa-web-three.vercel.app</div>
+                <button class="qr-download" onclick="downloadQR('qr-rsa', 'QR-RSA-Platform')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download QR
+                </button>
             </div>
             <div class="qr-card">
                 <h4>TripGuardian</h4>
                 <p>Real-time threat monitoring & SOC command</p>
                 <div class="qr-container" id="qr-trip"></div>
                 <div class="qr-url">comando-adl.pages.dev</div>
+                <button class="qr-download" onclick="downloadQR('qr-trip', 'QR-TripGuardian')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download QR
+                </button>
             </div>
             <div class="qr-card">
                 <h4>This Landing Page</h4>
                 <p>Share with your team &mdash; instant access</p>
                 <div class="qr-container" id="qr-landing"></div>
                 <div class="qr-url" id="landing-url">current page</div>
+                <button class="qr-download" onclick="downloadQR('qr-landing', 'QR-TripGuardian-Landing')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download QR
+                </button>
             </div>
         </div>
     </div>
@@ -1501,6 +1541,63 @@
         requestAnimationFrame(animate);
     }
     animate();
+
+    // ── QR Download ──
+    function downloadQR(containerId, filename) {
+        const container = document.getElementById(containerId);
+        const img = container.querySelector('img');
+        const cvs = container.querySelector('canvas');
+        const src = img ? img.src : (cvs ? cvs.toDataURL('image/png') : null);
+        if (!src) return;
+
+        // Create a larger canvas with branding
+        const pad = 40;
+        const labelH = 50;
+        const size = 180;
+        const totalW = size + pad * 2;
+        const totalH = size + pad * 2 + labelH;
+
+        const dlCanvas = document.createElement('canvas');
+        dlCanvas.width = totalW;
+        dlCanvas.height = totalH;
+        const c = dlCanvas.getContext('2d');
+
+        // Background
+        c.fillStyle = '#0a1628';
+        c.fillRect(0, 0, totalW, totalH);
+
+        // Border glow
+        c.strokeStyle = '#1e90ff';
+        c.lineWidth = 2;
+        c.strokeRect(1, 1, totalW - 2, totalH - 2);
+
+        // White area for QR
+        c.fillStyle = '#ffffff';
+        c.fillRect(pad, pad, size, size);
+
+        // Draw QR image
+        const qrImg = new Image();
+        qrImg.onload = function() {
+            c.drawImage(qrImg, pad, pad, size, size);
+
+            // Label
+            c.fillStyle = '#c8d6e5';
+            c.font = '600 11px Inter, sans-serif';
+            c.textAlign = 'center';
+            c.fillText(filename.replace(/^QR-/, '').replace(/-/g, ' '), totalW / 2, size + pad + 20);
+
+            c.fillStyle = '#6b8299';
+            c.font = '500 9px Inter, sans-serif';
+            c.fillText('Trip Guardian by J&P', totalW / 2, size + pad + 36);
+
+            // Download
+            const link = document.createElement('a');
+            link.download = filename + '.png';
+            link.href = dlCanvas.toDataURL('image/png');
+            link.click();
+        };
+        qrImg.src = src;
+    }
 
     // ── Scroll Fade ──
     const observer = new IntersectionObserver((entries) => {
