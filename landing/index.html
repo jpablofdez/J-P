@@ -830,18 +830,26 @@
 
         .qr-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
             margin-top: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .qr-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 2.5rem;
+            padding: 1.5rem;
             text-align: center;
             transition: all 0.3s;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .qr-card:hover {
@@ -851,24 +859,24 @@
 
         .qr-card h4 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 700;
             color: var(--text-bright);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
         }
 
         .qr-card p {
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             color: var(--text-dim);
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.75rem;
         }
 
         .qr-container {
             display: inline-block;
-            padding: 1rem;
+            padding: 0.6rem;
             background: #fff;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
         }
 
         .qr-container canvas,
@@ -885,8 +893,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            margin-top: 1rem;
-            padding: 0.55rem 1.25rem;
+            margin-top: 0.5rem;
+            padding: 0.4rem 1rem;
             background: linear-gradient(135deg, var(--primary), var(--primary-dim));
             color: #fff;
             border: none;
