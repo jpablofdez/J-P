@@ -829,13 +829,11 @@
         }
 
         .qr-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            display: flex;
+            justify-content: center;
             gap: 1.5rem;
             margin-top: 3rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
+            flex-wrap: wrap;
         }
 
         .qr-card {
@@ -845,11 +843,11 @@
             padding: 1.5rem;
             text-align: center;
             transition: all 0.3s;
-            aspect-ratio: 1 / 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            width: 220px;
         }
 
         .qr-card:hover {
@@ -1157,8 +1155,7 @@
             .leader-bio { font-size: 0.82rem; }
             .leader-experience { flex-wrap: wrap; gap: 1rem; }
 
-            .qr-grid { grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 100%; }
-            .qr-card { padding: 1rem; aspect-ratio: auto; }
+            .qr-card { width: 180px; padding: 1rem; }
             .qr-card h4 { font-size: 0.75rem; }
             .qr-card p { font-size: 0.65rem; margin-bottom: 0.5rem; }
             .qr-download { font-size: 0.68rem; padding: 0.35rem 0.75rem; }
@@ -1210,8 +1207,8 @@
             .exp-value { font-size: 0.85rem; }
             .exp-label { font-size: 0.55rem; }
 
-            .qr-grid { grid-template-columns: 1fr; gap: 1rem; max-width: 250px; }
-            .qr-card { aspect-ratio: 1 / 1; padding: 1rem; }
+            .qr-grid { gap: 1rem; }
+            .qr-card { width: 200px; padding: 1.25rem; }
             .qr-card h4 { font-size: 0.8rem; }
             .qr-download { font-size: 0.7rem; }
 
